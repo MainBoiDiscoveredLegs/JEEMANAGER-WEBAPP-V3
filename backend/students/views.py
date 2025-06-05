@@ -8,7 +8,7 @@ class ChapterListView(generics.ListAPIView):
     serializer_class = ChapterProgressSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['phase', 'subject']
-    
+
 class ChapterUpdateView(generics.UpdateAPIView):
     queryset = ChapterProgress.objects.all()
     serializer_class = ChapterProgressSerializer

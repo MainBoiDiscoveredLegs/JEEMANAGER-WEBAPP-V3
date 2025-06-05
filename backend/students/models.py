@@ -1,7 +1,7 @@
 from django.db import models
 
 class ChapterProgress(models.Model):
-    PHASE_CHOICES = [(i, f"Phase {i}") for i in range(1, 11)]
+    PHASE_CHOICES = [(i, f"Phase {i}") for i in range(1, 14)]
     SUBJECT_CHOICES = [
         ('Physics', 'Physics'),
         ('Chemistry', 'Chemistry'),

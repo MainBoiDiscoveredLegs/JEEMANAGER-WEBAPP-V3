@@ -1,0 +1,95 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  font-family: 'Courier New', monospace;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.subject-section {
+  margin-bottom: 30px;
+}
+
+.subject-section h3 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #2c2c2c;
+  font-size: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.phase-block {
+  display: flex;
+  align-items: flex-start;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 10px 15px;
+  border-left: 4px solid #db4588;
+}
+
+.phase-bracket {
+  min-width: 90px;
+  margin-right: 20px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  user-select: none;
+}
+
+.phase-block ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.phase-block li {
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: #444;
+}
+
+.close-button {
+  display: block;
+  margin: 30px auto 0;
+  padding: 10px 20px;
+  background-color: #db4588;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  width: 40%;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #8b2955;
+}
+
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
