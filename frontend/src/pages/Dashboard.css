@@ -115,7 +115,6 @@ table {
     background-color: #fff;
     border-radius: 5px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 th,
@@ -128,17 +127,6 @@ td {
 th {
     background-color: #f0f0f0;
 }
-
-tbody tr {
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    cursor: pointer;
-}
-
-tbody tr:hover {
-    background-color: #f2f2f261;
-    transform: scale(1.005);
-}
-
 
 input[type="text"] {
     padding: 6px;

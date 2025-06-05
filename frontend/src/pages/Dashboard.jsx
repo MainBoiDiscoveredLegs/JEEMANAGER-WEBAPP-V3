@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Dashboard.css";
 import KeyModal from "../components/KeyModal";
-import pfp from "../assets/pfp.png";
+import PfpSelectorModal from "../components/PfpSelectorModal";
+// import pfp from "../assets/pfp.png";
 
 function Dashboard() {
     const [phase, setPhase] = useState("1");
@@ -12,6 +13,11 @@ function Dashboard() {
 
     const [showKey, setShowKey] = useState(false);
 
+    const [showPfpModal, setShowPfpModal] = useState(false);
+    const [currentPfp, setCurrentPfp] = useState(localStorage.getItem("pfp") || "pfp.png");
+
+    const [rowHighlights, setRowHighlights] = useState({});
+
     const name = localStorage.getItem("name");
 
     useEffect(() => {
@@ -20,6 +26,19 @@ function Dashboard() {
             .then((res) => setData(res.data))
             .catch((err) => console.error(err));
     }, [phase, subject]);
+
+    useEffect(() => {
+        const savedHighlights = localStorage.getItem("rowHighlights");
+        if (savedHighlights) {
+            setRowHighlights(JSON.parse(savedHighlights));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("rowHighlights", JSON.stringify(rowHighlights));
+    }, [rowHighlights]);
+
+
 
     const handleStatusChange = (id, newStatus) => {
         setData((prevData) =>
@@ -37,12 +56,20 @@ function Dashboard() {
         window.location.href = "/";
     };
 
+    const images = import.meta.glob("../assets/pfp*.png", { eager: true });
+
     return (
         <div className="dashboard">
             <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                 <div className="header">
                     <div className="left">
-                        <img src={pfp} alt="profile" className="profile-pic" />
+                        <img
+                            src={images[`../assets/${currentPfp}`]?.default}
+                            alt="profile"
+                            className="profile-pic"
+                            onClick={() => setShowPfpModal(true)}
+                            style={{ cursor: "pointer" }}
+                        />
                         <span>{name}</span>
                     </div>
                     <div className={`hamburger-wrapper ${sidebarOpen ? "shifted" : ""}`}>
@@ -67,15 +94,48 @@ function Dashboard() {
                 <table>
                     <thead>
                         <tr>
+                            <th></th>
                             <th>S.No</th>
                             <th>Chapter</th>
                             <th>Status</th>
                             <th>Assignment</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {data.map((row) => (
-                            <tr key={row.id}>
+                            <tr
+                                key={row.id}
+                                style={{ backgroundColor: rowHighlights[row.id] || "transparent" }}
+                            >
+                                <td>
+                                    <div style={{ display: "flex", gap: "5px" }}>
+                                        {["#ade1ec", "#baadec", "#cbecad"].map((color) => (
+                                            <span
+                                                key={color}
+                                                onClick={() =>
+                                                    setRowHighlights((prev) => {
+                                                        const newHighlights = { ...prev };
+                                                        if (newHighlights[row.id] === color) {
+                                                            delete newHighlights[row.id];
+                                                        } else {
+                                                            newHighlights[row.id] = color;
+                                                        }
+                                                        return newHighlights;
+                                                    })
+                                                }
+
+                                                style={{
+                                                    width: "20px",
+                                                    height: "14px",
+                                                    borderRadius: "30%",
+                                                    backgroundColor: color,
+                                                    cursor: "pointer",
+                                                }}
+                                            ></span>
+                                        ))}
+                                    </div>
+                                </td>
                                 <td>{row.sno}</td>
                                 <td>{row.chapter}</td>
                                 <td>
@@ -87,6 +147,7 @@ function Dashboard() {
                                 </td>
                                 <td>{row.assignment}</td>
                             </tr>
+
                         ))}
                     </tbody>
                 </table>
@@ -102,6 +163,15 @@ function Dashboard() {
                 </div>
             </div>
             <KeyModal show={showKey} onClose={() => setShowKey(false)} />
+            <PfpSelectorModal
+                show={showPfpModal}
+                onClose={() => setShowPfpModal(false)}
+                onSelect={(newPfp) => {
+                    localStorage.setItem("pfp", newPfp);
+                    setCurrentPfp(newPfp);
+                }}
+            />
+
         </div>
 
     );
