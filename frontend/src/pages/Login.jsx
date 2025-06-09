@@ -34,7 +34,7 @@ function Login() {
       <form className="login-form" onSubmit={handleSubmit}>
         <input type="text" placeholder="Username" required
           value={name}
-          onChange={(e) => setName(e.target.value)} />
+          onChange={(e) => setName(e.target.value)}/>
         <input type="password" placeholder="Admission Number" required
           value={admission}
           onChange={(e) => setAdmission(e.target.value)} />

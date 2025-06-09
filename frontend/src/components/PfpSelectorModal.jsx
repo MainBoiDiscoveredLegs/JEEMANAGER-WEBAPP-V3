@@ -40,7 +40,6 @@ export default function PfpSelectorModal({ show, onClose, onSelect }) {
                     ))}
                 </div>
                 </center>
-                
                 <button className="close-button" onClick={onClose}>
                     Cancel
                 </button>
