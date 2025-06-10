@@ -3,7 +3,6 @@ import axios from "axios";
 import "./Dashboard.css";
 import KeyModal from "../components/KeyModal";
 import PfpSelectorModal from "../components/PfpSelectorModal";
-// import pfp from "../assets/pfp.png";
 
 function Dashboard() {
     const [phase, setPhase] = useState("1");
@@ -28,17 +27,19 @@ function Dashboard() {
     }, [phase, subject]);
 
     useEffect(() => {
-        const savedHighlights = localStorage.getItem("rowHighlights");
+        const key = `rowHighlights-${subject}-${phase}`;
+        const savedHighlights = localStorage.getItem(key);
         if (savedHighlights) {
             setRowHighlights(JSON.parse(savedHighlights));
+        } else {
+            setRowHighlights({});
         }
-    }, []);
+    }, [subject, phase]);
 
     useEffect(() => {
-        localStorage.setItem("rowHighlights", JSON.stringify(rowHighlights));
-    }, [rowHighlights]);
-
-
+        const key = `rowHighlights-${subject}-${phase}`;
+        localStorage.setItem(key, JSON.stringify(rowHighlights));
+    }, [rowHighlights, subject, phase]);
 
     const handleStatusChange = (id, newStatus) => {
         setData((prevData) =>
@@ -171,9 +172,7 @@ function Dashboard() {
                     setCurrentPfp(newPfp);
                 }}
             />
-
         </div>
-
     );
 }
 
