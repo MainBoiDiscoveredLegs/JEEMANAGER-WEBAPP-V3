@@ -11,24 +11,25 @@ body {
 }
 
 .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
     width: 200px;
     background-color: #1f1f1f;
     color: white;
     padding: 20px;
     box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    bottom: 0;
+    transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
-    z-index: 2;
+    z-index: 1000;
 }
 
-.right-sidebar {
-    right: 0;
+.sidebar.right-sidebar {
     transform: translateX(0);
 }
 
-.right-sidebar.hidden {
+.sidebar.right-sidebar.hidden {
     transform: translateX(100%);
 }
 
@@ -148,24 +149,24 @@ textarea {
 }
 
 .sidebar-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .sidebar-options button {
-  background: none;
-  border: none;
-  padding: 10px;
-  margin: 0;
-  text-align: left;
-  cursor: pointer;
-  font: inherit;
-  font-size: 15px;
-  color: #ccc;
-  outline: none;
+    background: none;
+    border: none;
+    padding: 10px;
+    margin: 0;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    font-size: 15px;
+    color: #ccc;
+    outline: none;
 }
 
 .sidebar-options button:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }

@@ -5,12 +5,12 @@ import Dashboard from "./pages/Dashboard.jsx";
 
 function App() {
   return (
-    <Router>
+    // <Router>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
-    </Router>
+    // </Router>
   );
 }
 
