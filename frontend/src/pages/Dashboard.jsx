@@ -9,37 +9,42 @@ function Dashboard() {
     const [subject, setSubject] = useState("Physics");
     const [data, setData] = useState([]);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
     const [showKey, setShowKey] = useState(false);
-
     const [showPfpModal, setShowPfpModal] = useState(false);
     const [currentPfp, setCurrentPfp] = useState(localStorage.getItem("pfp") || "pfp.png");
-
+    const [user, setUser] = useState(null);
     const [rowHighlights, setRowHighlights] = useState({});
 
-    const name = localStorage.getItem("name");
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
-        axios
-            .get(`http://127.0.0.1:8000/api/chapters/?phase=${phase}&subject=${subject}`)
-            .then((res) => setData(res.data))
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+    }, []);
+
+    useEffect(() => {
+        if (!token) return;
+        axios.get(`http://127.0.0.1:8000/api/chapters/?phase=${phase}&subject=${subject}`
+            , {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then((res) => {
+                const updatedData = res.data.map((item, index) => ({
+                    ...item,
+                    sno: index + 1
+                }));
+                setData(updatedData);
+
+                const newHighlights = {};
+                updatedData.forEach(item => {
+                    newHighlights[item.id] = item.highlight_color || "#FFFFFF";
+                });
+                setRowHighlights(newHighlights);
+            })
             .catch((err) => console.error(err));
-    }, [phase, subject]);
-
-    useEffect(() => {
-        const key = `rowHighlights-${subject}-${phase}`;
-        const savedHighlights = localStorage.getItem(key);
-        if (savedHighlights) {
-            setRowHighlights(JSON.parse(savedHighlights));
-        } else {
-            setRowHighlights({});
-        }
-    }, [subject, phase]);
-
-    useEffect(() => {
-        const key = `rowHighlights-${subject}-${phase}`;
-        localStorage.setItem(key, JSON.stringify(rowHighlights));
-    }, [rowHighlights, subject, phase]);
+    }, [phase, subject, token]);
 
     const handleStatusChange = (id, newStatus) => {
         setData((prevData) =>
@@ -47,10 +52,34 @@ function Dashboard() {
                 item.id === id ? { ...item, status: newStatus } : item
             )
         );
-        axios.patch(`http://127.0.0.1:8000/api/chapters/${id}/`, {
+
+        axios.patch(`http://127.0.0.1:8000/api/progress/${id}/update_progress/`, {
             status: newStatus,
+            highlight_color: rowHighlights[id] || "#FFFFFF"
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
         });
     };
+
+    const handleHighlightChange = (id, color, status) => {
+        let updatedHighlights = { ...rowHighlights };
+
+        if (updatedHighlights[id] === color) {
+            delete updatedHighlights[id];
+        } else {
+            updatedHighlights[id] = color;
+        }
+
+        setRowHighlights(updatedHighlights);
+
+        axios.patch(`http://127.0.0.1:8000/api/progress/${id}/update_progress/`, {
+            highlight_color: updatedHighlights[id] || "#FFFFFF",
+            status: status
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    };
+
 
     const logout = () => {
         localStorage.clear();
@@ -71,7 +100,12 @@ function Dashboard() {
                             onClick={() => setShowPfpModal(true)}
                             style={{ cursor: "pointer" }}
                         />
-                        <span>{name}</span>
+                        <div className="user-info">
+                            <span className="user-name">
+                                {user ? `${user.first_name} ${user.last_name}` : "Loading..."}
+                            </span>
+                            <span className="user-username">@{user?.username}</span>
+                        </div>
                     </div>
                     <div className={`hamburger-wrapper ${sidebarOpen ? "shifted" : ""}`}>
                         <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
@@ -80,7 +114,7 @@ function Dashboard() {
 
                 <div className="filters">
                     <select value={phase} onChange={(e) => setPhase(e.target.value)}>
-                        {[...Array(13)].map((_, i) => (
+                        {[...Array(7)].map((_, i) => (
                             <option key={i + 1}>{i + 1}</option>
                         ))}
                     </select>
@@ -99,33 +133,17 @@ function Dashboard() {
                             <th>S.No</th>
                             <th>Chapter</th>
                             <th>Status</th>
-                            <th>Assignment</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {data.map((row) => (
-                            <tr
-                                key={row.id}
-                                style={{ backgroundColor: rowHighlights[row.id] || "transparent" }}
-                            >
+                            <tr key={row.id} style={{ backgroundColor: rowHighlights[row.id] || "transparent" }}>
                                 <td>
                                     <div style={{ display: "flex", gap: "5px" }}>
                                         {["#ade1ec", "#baadec", "#cbecad"].map((color) => (
                                             <span
                                                 key={color}
-                                                onClick={() =>
-                                                    setRowHighlights((prev) => {
-                                                        const newHighlights = { ...prev };
-                                                        if (newHighlights[row.id] === color) {
-                                                            delete newHighlights[row.id];
-                                                        } else {
-                                                            newHighlights[row.id] = color;
-                                                        }
-                                                        return newHighlights;
-                                                    })
-                                                }
-
+                                                onClick={() => handleHighlightChange(row.id, color, row.status)}
                                                 style={{
                                                     width: "20px",
                                                     height: "14px",
@@ -146,9 +164,7 @@ function Dashboard() {
                                         onChange={(e) => handleStatusChange(row.id, e.target.value)}
                                     />
                                 </td>
-                                <td>{row.assignment}</td>
                             </tr>
-
                         ))}
                     </tbody>
                 </table>
@@ -163,6 +179,7 @@ function Dashboard() {
                     <button onClick={logout}>Logout</button>
                 </div>
             </div>
+
             <KeyModal show={showKey} onClose={() => setShowKey(false)} />
             <PfpSelectorModal
                 show={showPfpModal}
@@ -170,6 +187,13 @@ function Dashboard() {
                 onSelect={(newPfp) => {
                     localStorage.setItem("pfp", newPfp);
                     setCurrentPfp(newPfp);
+                    axios.patch("http://127.0.0.1:8000/api/users/preferences/", {
+                        profile_picture: newPfp
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
                 }}
             />
         </div>

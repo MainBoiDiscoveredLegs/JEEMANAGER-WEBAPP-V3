@@ -82,13 +82,29 @@ body {
 .left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .profile-pic {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.user-username {
+    font-size: 0.9em;
+    color: #666;
 }
 
 .filters {
