@@ -28,16 +28,23 @@ export const register = async (userData) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await api.post('/login/', credentials);
+    const response = await axios.post("http://localhost:8000/api/login/", credentials, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
     const { access, refresh, user } = response.data;
     localStorage.setItem('token', access);
     localStorage.setItem('refreshToken', refresh);
     localStorage.setItem('user', JSON.stringify(user));
     return response.data;
   } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
     throw error.response?.data || error.message;
   }
 };
+
 
 export const getChapters = async () => {
   try {

@@ -27,6 +27,17 @@ class UserLoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
+        print("LOGIN ATTEMPT:", username, repr(password))
+
+        from django.contrib.auth.models import User
+        try:
+            user = User.objects.get(username=username)
+            print("User exists:", user)
+            print("Hashed password:", user.password)
+            print("check_password:", user.check_password(password))
+        except User.DoesNotExist:
+            print("No such user.")
+
         user = authenticate(username=username, password=password)
 
         if user:
@@ -36,7 +47,9 @@ class UserLoginView(APIView):
                 'access': str(refresh.access_token),
                 'user': UserSerializer(user).data
             })
+
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class ChapterListView(APIView):
     permission_classes = [IsAuthenticated]

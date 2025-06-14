@@ -28,7 +28,6 @@ function Login() {
     setError("");
 
     try {
-      // Log in or register
       if (!isLogin) {
         await register(formData);
       }
@@ -40,12 +39,11 @@ function Login() {
 
       const { access, user } = loginResponse;
 
-      // Save to localStorage
       localStorage.setItem("token", access);
       localStorage.setItem("user", JSON.stringify(user));
 
       // Fetch pfp
-      const pfpRes = await axios.get("http://127.0.0.1:8000/api/users/preferences/", {
+      const pfpRes = await axios.get("http://localhost:8000/api/users/preferences/", {
         headers: {
           Authorization: `Bearer ${access}`
         }
@@ -55,11 +53,50 @@ function Login() {
       localStorage.setItem("pfp", pfp);
 
       navigate("/dashboard");
-
     } catch (err) {
+      console.error("Login error:", err);
       setError(err.error || "An error occurred. Please try again.");
     }
   };
+
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+
+  //   try {
+  //     // Log in or register
+  //     if (!isLogin) {
+  //       await register(formData);
+  //     }
+
+  //     const loginResponse = await login({
+  //       username: formData.username,
+  //       password: formData.password
+  //     });
+
+  //     const { access, user } = loginResponse;
+
+  //     // Save to localStorage
+  //     localStorage.setItem("token", access);
+  //     localStorage.setItem("user", JSON.stringify(user));
+
+  //     // Fetch pfp
+  //     const pfpRes = await axios.get("http://127.0.0.1:8000/api/users/preferences/", {
+  //       headers: {
+  //         Authorization: `Bearer ${access}`
+  //       }
+  //     });
+
+  //     const pfp = pfpRes.data.profile_picture || "pfp.png";
+  //     localStorage.setItem("pfp", pfp);
+
+  //     navigate("/dashboard");
+
+  //   } catch (err) {
+  //     setError(err.error || "An error occurred. Please try again.");
+  //   }
+  // };
 
   return (
     <div className="login-container">
